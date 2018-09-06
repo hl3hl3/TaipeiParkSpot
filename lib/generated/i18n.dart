@@ -21,11 +21,21 @@ class S implements WidgetsLocalizations {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
-  String get app_name => "Taipei Park";
+  String get app_name => "Taipei Park Spot";
 }
 
 class en extends S {
   const en();
+}
+
+class zh extends S {
+  const zh();
+
+   @override
+  TextDirection get textDirection => TextDirection.ltr;
+
+  @override
+  String get app_name => "台北市公園景點";
 }
 
 
@@ -36,6 +46,7 @@ class GeneratedLocalizationsDelegate extends LocalizationsDelegate<WidgetsLocali
     return const <Locale>[
 
       const Locale("en", ""),
+      const Locale("zh", ""),
 
     ];
   }
@@ -61,6 +72,8 @@ class GeneratedLocalizationsDelegate extends LocalizationsDelegate<WidgetsLocali
 
       case "en":
         return new SynchronousFuture<WidgetsLocalizations>(const en());
+      case "zh":
+        return new SynchronousFuture<WidgetsLocalizations>(const zh());
 
       default:
         return new SynchronousFuture<WidgetsLocalizations>(const S());
