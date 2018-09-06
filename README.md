@@ -1,6 +1,6 @@
 # flutter_taipei_park_example
 
-A flutter example application for displaying data from Taipei Park API
+A flutter example application for displaying data from Taipei Park API (http://data.taipei/)
 
 ## Getting Started
 
