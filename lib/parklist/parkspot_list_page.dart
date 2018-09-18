@@ -18,6 +18,10 @@ class ParkSpotListPage extends StatefulWidget {
 
 class _ParkSpotListPageState extends State<ParkSpotListPage> {
   final String asset_image_loading = "images/loading_park.jpeg";
+  static const data_status_loading = 0;
+  static const data_status_ok = 1;
+  static const data_status_error = -1;
+  int dataStatus = 0;
   List<ParkSpotListItemDTO> items = [];
 
   @override
@@ -28,15 +32,25 @@ class _ParkSpotListPageState extends State<ParkSpotListPage> {
 
   @override
   Widget build(BuildContext context) {
+    Widget body;
+    switch(dataStatus) {
+      case data_status_error:
+        body = buildErrorWidget();
+        break;
+      case data_status_ok:
+        body = buildSpotListWidget();
+        break;
+      default:
+        body = buildLoadingWidget();
+        break;
+    }
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(S.of(context).app_name),
       ),
       body: new Container(
-        child: new ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (BuildContext ctxt, int index) =>
-                buildBody(ctxt, index)),
+        child: body,
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: (() => fetchAllParkSpot()),
@@ -44,6 +58,22 @@ class _ParkSpotListPageState extends State<ParkSpotListPage> {
         child: new Icon(Icons.refresh),
       ),
     );
+  }
+
+  Widget buildLoadingWidget(){
+    return new Center(
+      child: new Text("載入中...", style: new TextStyle(color: Colors.black45, fontSize: 24.0)),
+    );
+  }
+
+  Widget buildErrorWidget(){
+    return new Center(child: new Text("連線異常", style: new TextStyle(color: Colors.black45, fontSize: 24.0)));
+  }
+
+  Widget buildSpotListWidget() {
+    return new ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (BuildContext ctxt, int index) => buildBody(ctxt, index));
   }
 
   Widget buildBody(BuildContext ctxt, int index) {
@@ -99,7 +129,20 @@ class _ParkSpotListPageState extends State<ParkSpotListPage> {
     return decodeMap;
   }
 
+  showLoading() {
+    setState(() {
+      dataStatus = data_status_loading;
+    });
+  }
+
+  showError() {
+    setState(() {
+      dataStatus = data_status_error;
+    });
+  }
+
   fetchAllParkSpot() async {
+    showLoading();
     var rid = "bf073841-c734-49bf-a97f-3757a6013812";
     var url =
         "http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=$rid";
@@ -109,8 +152,10 @@ class _ParkSpotListPageState extends State<ParkSpotListPage> {
       ParkSpotDTO resultDTO = ParkSpotDTO.fromJson(getDecodedMap(response.body));
       setState(() {
         items = resultDTO.result.results;
+        dataStatus = data_status_ok;
       });
     } else {
+      showError();
       throw Exception('Failed to load park data');
     }
   }
